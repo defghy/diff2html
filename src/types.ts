@@ -1,3 +1,5 @@
+import type * as Hogan from 'hogan.js';
+
 export type DiffLineParts = {
   prefix: string;
   content: string;
@@ -96,4 +98,10 @@ export enum ColorSchemeType {
   AUTO = 'auto',
   DARK = 'dark',
   LIGHT = 'light',
+}
+
+export interface LineRenderData {
+  ns: string;
+  view: string;
+  data: Hogan.Context;
 }

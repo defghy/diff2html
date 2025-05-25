@@ -4,6 +4,7 @@ import * as renderUtils from './render-utils';
 import {
   DiffLine,
   LineType,
+  LineRenderData,
   DiffFile,
   DiffBlock,
   DiffLineContext,
@@ -57,6 +58,33 @@ export default class SideBySideRenderer {
       content: diffsHtml,
     });
   }
+
+  renderLines = (
+    diffFile: DiffFile,
+  ): { leftLines: LineRenderData[]; rightLines: LineRenderData[]; renderLine: (args: LineRenderData) => string } => {
+    const leftLines: LineRenderData[] = [];
+    const rightLines: LineRenderData[] = [];
+
+    if (diffFile.blocks.length) {
+      // diffs = this.generateFileHtml(diffFile);
+    } else {
+      leftLines.push({
+        ns: genericTemplatesPath,
+        view: 'empty-diff',
+        data: {
+          contentClass: 'd2h-code-side-line',
+          CSSLineClass: renderUtils.CSSLineClass,
+        },
+      });
+    }
+    return {
+      leftLines,
+      rightLines,
+      renderLine: ({ ns, view, data }: LineRenderData) => {
+        return this.hoganUtils.render(ns, view, data);
+      },
+    };
+  };
 
   makeFileDiffHtml(file: DiffFile, diffs: FileHtml): string {
     if (this.config.renderNothingWhenEmpty && Array.isArray(file.blocks) && file.blocks.length === 0) return '';
