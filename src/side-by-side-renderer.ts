@@ -12,6 +12,7 @@ import {
   DiffLineInserted,
   DiffLineContent,
 } from './types';
+import { max } from './utils';
 
 export interface SideBySideRendererConfig extends renderUtils.RenderConfig {
   renderNothingWhenEmpty?: boolean;
@@ -222,10 +223,7 @@ export default class SideBySideRenderer {
     matcher: Rematch.MatcherFn<DiffLine>,
   ): DiffLine[][][] {
     const comparisons = oldLines.length * newLines.length;
-    const maxLineSizeInBlock = Math.max.apply(
-      null,
-      [0].concat(oldLines.concat(newLines).map(elem => elem.content.length)),
-    );
+    const maxLineSizeInBlock = max(oldLines.concat(newLines).map(elem => elem.content.length));
     const doMatching =
       comparisons < this.config.matchingMaxComparisons &&
       maxLineSizeInBlock < this.config.maxLineSizeInBlockForComparison &&
