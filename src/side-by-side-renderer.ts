@@ -5,6 +5,7 @@ import {
   DiffLine,
   LineType,
   LineRenderData,
+  LineRenderRaw,
   DiffFile,
   DiffBlock,
   DiffLineContext,
@@ -60,32 +61,45 @@ export default class SideBySideRenderer {
     });
   }
 
-  renderLines = (
+  createLines = (
     diffFile: DiffFile,
-  ): { leftLines: LineRenderData[]; rightLines: LineRenderData[]; renderLine: (args: LineRenderData) => string } => {
-    const leftLines: LineRenderData[] = [];
-    const rightLines: LineRenderData[] = [];
+  ): { leftLines: LineRenderRaw[]; rightLines: LineRenderRaw[]; renderLine: (item: LineRenderRaw) => string } => {
+    const { isCombined } = diffFile;
+    const matcher = Rematch.newMatcherFn(
+      Rematch.newDistanceFn((e: any) => renderUtils.deconstructLine(e.content, isCombined).content),
+    );
+    const leftLines: LineRenderRaw[] = [];
+    const rightLines: LineRenderRaw[] = [];
 
     if (diffFile.blocks.length) {
-      // diffs = this.generateFileHtml(diffFile);
-    } else {
-      leftLines.push({
-        ns: genericTemplatesPath,
-        view: 'empty-diff',
-        data: {
-          contentClass: 'd2h-code-side-line',
-          CSSLineClass: renderUtils.CSSLineClass,
-        },
+      diffFile.blocks.forEach(block => {
+        leftLines.push({ renderBy: 'header', data: block.header });
+        rightLines.push({ renderBy: 'header', data: '' });
+        this.applyLineGroupping(block).forEach(([contextLines, oldLines, newLines]) => {
+          if (oldLines.length && newLines.length && !contextLines.length) {
+            // this.applyRematchMatching(oldLines, newLines, matcher).map(([oldLines, newLines]) => {
+            //   const { left, right } = this.processChangedLines(isCombined, oldLines, newLines);
+            //   fileHtml.left += left;
+            //   fileHtml.right += right;
+            // });
+          }
+        });
       });
+    } else {
+      leftLines.push({ renderBy: 'empty' });
     }
     return {
       leftLines,
       rightLines,
-      renderLine: ({ ns, view, data }: LineRenderData) => {
-        return this.hoganUtils.render(ns, view, data);
-      },
+      renderLine: item => this.renderLine({ item, file: diffFile }),
     };
   };
+
+  renderLine({ item, file }: { item: LineRenderRaw; file: DiffFile }) {
+    item;
+    file;
+    return '';
+  }
 
   makeFileDiffHtml(file: DiffFile, diffs: FileHtml): string {
     if (this.config.renderNothingWhenEmpty && Array.isArray(file.blocks) && file.blocks.length === 0) return '';

@@ -105,3 +105,8 @@ export interface LineRenderData {
   view: string;
   data: Hogan.Context;
 }
+
+export interface LineRenderRaw {
+  renderBy: 'empty' | 'header' | 'context'
+  data?: any
+}

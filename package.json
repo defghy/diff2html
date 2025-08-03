@@ -156,5 +156,14 @@
     "bundles",
     "lib",
     "lib-esm"
-  ]
+  ],
+  "browserslist": {
+    "production": [
+        "> 1%",
+        "last 2 versions"
+    ],
+    "development": [
+        "chrome >= 120"
+    ]
+  }
 }

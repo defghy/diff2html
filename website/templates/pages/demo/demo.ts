@@ -175,7 +175,7 @@ function setBodyColorScheme(colorScheme: ColorSchemeType): void {
 
 async function prepareInitialState(elements: Elements): Promise<[Diff2HtmlUIConfig, string]> {
   const urlParams = getParamsFromSearch(window.location.search);
-  const currentUrl = (urlParams && urlParams[searchParam]) || 'https://github.com/rtfpessoa/diff2html/pull/106';
+  const currentUrl = (urlParams && urlParams[searchParam]) || 'https://github.com/kxxxlfe/devtools/pull/9';
 
   if (currentUrl !== elements.url.input.value) elements.url.input.value = currentUrl;
 
