@@ -4,8 +4,6 @@ import * as renderUtils from './render-utils';
 import {
   DiffLine,
   LineType,
-  LineRenderData,
-  LineRenderRaw,
   DiffFile,
   DiffBlock,
   DiffLineContext,
@@ -35,7 +33,7 @@ const tagsBaseTemplatesPath = 'tag';
 
 export default class SideBySideRenderer {
   private readonly hoganUtils: HoganJsUtils;
-  private readonly config: typeof defaultSideBySideRendererConfig;
+  readonly config: typeof defaultSideBySideRendererConfig;
 
   constructor(hoganUtils: HoganJsUtils, config: SideBySideRendererConfig = {}) {
     this.hoganUtils = hoganUtils;
@@ -59,46 +57,6 @@ export default class SideBySideRenderer {
       colorScheme: renderUtils.colorSchemeToCss(this.config.colorScheme),
       content: diffsHtml,
     });
-  }
-
-  createLines = (
-    diffFile: DiffFile,
-  ): { leftLines: LineRenderRaw[]; rightLines: LineRenderRaw[]; renderLine: (item: LineRenderRaw) => string } => {
-    const { isCombined } = diffFile;
-    const matcher = Rematch.newMatcherFn(
-      Rematch.newDistanceFn((e: any) => renderUtils.deconstructLine(e.content, isCombined).content),
-    );
-    const leftLines: LineRenderRaw[] = [];
-    const rightLines: LineRenderRaw[] = [];
-
-    if (diffFile.blocks.length) {
-      diffFile.blocks.forEach(block => {
-        leftLines.push({ renderBy: 'header', data: block.header });
-        rightLines.push({ renderBy: 'header', data: '' });
-        this.applyLineGroupping(block).forEach(([contextLines, oldLines, newLines]) => {
-          if (oldLines.length && newLines.length && !contextLines.length) {
-            // this.applyRematchMatching(oldLines, newLines, matcher).map(([oldLines, newLines]) => {
-            //   const { left, right } = this.processChangedLines(isCombined, oldLines, newLines);
-            //   fileHtml.left += left;
-            //   fileHtml.right += right;
-            // });
-          }
-        });
-      });
-    } else {
-      leftLines.push({ renderBy: 'empty' });
-    }
-    return {
-      leftLines,
-      rightLines,
-      renderLine: item => this.renderLine({ item, file: diffFile }),
-    };
-  };
-
-  renderLine({ item, file }: { item: LineRenderRaw; file: DiffFile }) {
-    item;
-    file;
-    return '';
   }
 
   makeFileDiffHtml(file: DiffFile, diffs: FileHtml): string {
@@ -137,7 +95,9 @@ export default class SideBySideRenderer {
 
   generateFileHtml(file: DiffFile): FileHtml {
     const matcher = Rematch.newMatcherFn(
-      Rematch.newDistanceFn((e: DiffLine) => renderUtils.deconstructLine(e.content, file.isCombined).content),
+      Rematch.newDistanceFn((e: DiffLine) => {
+        return renderUtils.deconstructLine(e.content, file.isCombined).content;
+      }),
     );
 
     return file.blocks
