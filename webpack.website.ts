@@ -49,6 +49,7 @@ function plugins(page: string): Plugin[] {
 
 const config: webpack.Configuration[] = pages.map(page => {
   return {
+    devtool: 'eval-cheap-source-map',
     entry: {
       [page]: `./website/templates/pages/${page}/${page}.ts`,
     },

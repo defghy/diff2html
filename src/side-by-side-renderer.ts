@@ -33,7 +33,7 @@ const tagsBaseTemplatesPath = 'tag';
 
 export default class SideBySideRenderer {
   private readonly hoganUtils: HoganJsUtils;
-  private readonly config: typeof defaultSideBySideRendererConfig;
+  readonly config: typeof defaultSideBySideRendererConfig;
 
   constructor(hoganUtils: HoganJsUtils, config: SideBySideRendererConfig = {}) {
     this.hoganUtils = hoganUtils;
@@ -95,7 +95,9 @@ export default class SideBySideRenderer {
 
   generateFileHtml(file: DiffFile): FileHtml {
     const matcher = Rematch.newMatcherFn(
-      Rematch.newDistanceFn((e: DiffLine) => renderUtils.deconstructLine(e.content, file.isCombined).content),
+      Rematch.newDistanceFn((e: DiffLine) => {
+        return renderUtils.deconstructLine(e.content, file.isCombined).content;
+      }),
     );
 
     return file.blocks
